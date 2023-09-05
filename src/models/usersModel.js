@@ -1,5 +1,6 @@
 const knex = require('knex');
 const knexConfig = require('../../knexfile.js');
+const bcrypt = require('bcrypt');
 
 const db = knex(knexConfig.development);
 
@@ -56,7 +57,7 @@ const putUpdateUser = async (data) => {
     }
 };
 
-const authenticateUser = async (email, password) => {
+const postAuthenticateUser = async (email, password) => {
     try {
         const user = await db('users').where('email', email).first();
 
@@ -81,5 +82,5 @@ module.exports = {
     getAllUsers,
     postCreateUser,
     putUpdateUser,
-    authenticateUser
+    postAuthenticateUser,
 };
