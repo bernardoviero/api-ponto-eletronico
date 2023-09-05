@@ -12,15 +12,15 @@ const getAllUsers = async (req, res) => {
 
 const postCreateUser = async (req, res) => {
     try {
-        const { email, name, password, date_birth, cpf } = req.body;
+        const { email, name, password, dateBirth, cpf } = req.body;
         const date = new Date();
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
         const newUser = {
             email,
             name,
-            hashedPassword,
-            date_birth,
+            password: hashedPassword,
+            dateBirth,
             cpf,
             date
         };
@@ -33,19 +33,26 @@ const postCreateUser = async (req, res) => {
     }
 };
 
-const putEmail = async (req, res) => {
+const putUpdateUser = async (req, res) => {
     try {
         const { id } = req.params;
-        const { email } = req.body;
+        const { name, email, cpf, password, dateBirth, active, } = req.body;
         const dateNow = new Date();
         const dateFormat = dateNow.toISOString().split('T')[0];
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
 
         const data = {
             id,
+            name,
+            cpf,
+            password: hashedPassword,
+            dateBirth,
+            active,
             email,
-            date_alteration: dateFormat
+            dateAlteration: dateFormat
         };
-        await userModel.putEmail(data);
+        await userModel.putUpdateUser(data);
         res.status(201).json(data);
     } catch (error) {
         res.status(500).json({ error: 'altering users' });
@@ -55,5 +62,5 @@ const putEmail = async (req, res) => {
 module.exports = {
     getAllUsers,
     postCreateUser,
-    putEmail,
+    putUpdateUser,
 };

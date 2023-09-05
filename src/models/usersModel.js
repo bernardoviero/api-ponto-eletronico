@@ -14,16 +14,16 @@ const getAllUsers = async () => {
 
 const postCreateUser = async (data) => {
     try {
-        const { email, name, password, date_birth, cpf, date } = data;
+        const { email, name, password, dateBirth, cpf, dateAlteration } = data;
 
         const [insertedId] = await db('users').insert({
             email,
             name,
             password,
-            date_birth,
+            date_birth: dateBirth,
             cpf,
             active: 1,
-            date_alteration: date,
+            date_alteration: dateAlteration,
         });
         return { id: insertedId, ...data };
     } catch (error) {
@@ -31,9 +31,17 @@ const postCreateUser = async (data) => {
     }
 };
 
-const putEmail = async (data) => {
+const putUpdateUser = async (data) => {
     try {
-        await db('users').where('id', data.id).update({ email: data.email, date_alteration: data.date_alteration });
+        await db('users').where('id', data.id).update({
+            name: data.name,
+            email: data.email,
+            cpf: data.cpf,
+            password: data.password,
+            date_birth: data.dateBirth,
+            active: data.active,
+            date_alteration: data.dateAlteration
+        });
     } catch (error) {
         throw error;
     }
@@ -42,5 +50,5 @@ const putEmail = async (data) => {
 module.exports = {
     getAllUsers,
     postCreateUser,
-    putEmail
+    putUpdateUser
 };
