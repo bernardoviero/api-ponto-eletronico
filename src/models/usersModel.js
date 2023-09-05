@@ -8,7 +8,7 @@ const getAllUsers = async () => {
         const users = await db.select().from('users');
         return users;
     } catch (error) {
-        throw error;
+        throw new Error('Erro ao buscar usuários no banco de dados: ' + error.message);
     }
 };
 
@@ -25,15 +25,20 @@ const postCreateUser = async (data) => {
             active: 1,
             date_alteration: dateAlteration,
         });
+
+        if (!insertedId) {
+            throw new Error('Erro ao criar usuário no banco de dados.');
+        }
+
         return { id: insertedId, ...data };
     } catch (error) {
-        throw error;
+        throw new Error('Erro ao criar usuário no banco de dados: ' + error.message);
     }
 };
 
 const putUpdateUser = async (data) => {
     try {
-        await db('users').where('id', data.id).update({
+        const updatedRows = await db('users').where('id', data.id).update({
             name: data.name,
             email: data.email,
             cpf: data.cpf,
@@ -42,8 +47,12 @@ const putUpdateUser = async (data) => {
             active: data.active,
             date_alteration: data.dateAlteration
         });
+
+        if (updatedRows === 0) {
+            throw new Error('Usuário não encontrado para atualização.');
+        }
     } catch (error) {
-        throw error;
+        throw new Error('Erro ao atualizar usuário no banco de dados: ' + error.message);
     }
 };
 
