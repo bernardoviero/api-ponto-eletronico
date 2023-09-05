@@ -12,22 +12,22 @@ const getAllUsers = async (req, res) => {
 
 const postCreateUser = async (req, res) => {
     try {
-        const { email, name, password, dateBirth, cpf } = req.body;
-        const date = new Date();
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
-        const newUser = {
-            email,
+        const { name, email, cpf, password, dateBirth } = req.body;
+        console.log("body", req.body);
+        const dateNow = new Date();
+        const dateFormat = dateNow.toISOString().split('T')[0];
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const data = {
             name,
+            email,
+            cpf,
             password: hashedPassword,
             dateBirth,
-            cpf,
-            date
+            dateAlteration: dateFormat
         };
-
-        await userModel.postCreateUser(newUser);
-
-        res.status(201).json(newUser);
+        await userModel.postCreateUser(data);
+        res.status(201).json(data);
     } catch (error) {
         res.status(500).json({ error: 'creating users' });
     }
@@ -39,8 +39,7 @@ const putUpdateUser = async (req, res) => {
         const { name, email, cpf, password, dateBirth, active, } = req.body;
         const dateNow = new Date();
         const dateFormat = dateNow.toISOString().split('T')[0];
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         const data = {
             id,
