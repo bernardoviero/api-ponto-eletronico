@@ -56,8 +56,30 @@ const putUpdateUser = async (data) => {
     }
 };
 
+const authenticateUser = async (email, password) => {
+    try {
+        const user = await db('users').where('email', email).first();
+
+        if (!user) {
+            return null;
+        }
+
+        const hashedPasswordFromDB = user.password;
+        const passwordMatch = await bcrypt.compare(password, hashedPasswordFromDB);
+
+        if (!passwordMatch) {
+            return null;
+        }
+
+        return user;
+    } catch (error) {
+        throw new Error('Erro ao verificar autenticação: ' + error.message);
+    }
+};
+
 module.exports = {
     getAllUsers,
     postCreateUser,
-    putUpdateUser
+    putUpdateUser,
+    authenticateUser
 };

@@ -32,7 +32,6 @@ const postCreateUser = async (req, res) => {
         await userModel.postCreateUser(data);
         res.status(201).json(data);
     } catch (error) {
-        console.error(error);
         res.status(500).json({ error: 'Erro ao criar usuário.' });
     }
 };
