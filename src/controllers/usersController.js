@@ -1,49 +1,59 @@
 const userModel = require('../models/usersModel');
+const bcrypt = require('bcrypt');
 
-const getAll = async (req, res) => {
+const getAllUsers = async (req, res) => {
     try {
-        const users = await userModel.getAll();
+        const users = await userModel.getAllUsers();
         res.status(200).json(users);
     } catch (error) {
-        res.status(500).json({ error: 'Erro ao buscar usuários' });
-    }
-};
-
-const getUserByEmail = async (req, res) => {
-    try {
-        const email = req.params.email;
-        const user = await userModel.getUserByEmail(email);
-
-        if (!user) {
-            res.status(404).json({ error: 'Usuário não encontrado' });
-            return;
-        }
-
-        res.status(200).json(user);
-    } catch (error) {
-        res.status(500).json({ error: 'Erro ao buscar usuário por email' });
+        res.status(500).json({ error: 'fetching users' });
     }
 };
 
 const postCreateUser = async (req, res) => {
     try {
-        const { email, nome, senha } = req.body;
+        const { email, name, password, date_birth, cpf } = req.body;
+        const date = new Date();
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
         const newUser = {
             email,
-            nome,
-            senha,
+            name,
+            hashedPassword,
+            date_birth,
+            cpf,
+            date
         };
 
         await userModel.postCreateUser(newUser);
 
         res.status(201).json(newUser);
     } catch (error) {
-        res.status(500).json({ error: 'Erro ao criar usuário' });
+        res.status(500).json({ error: 'creating users' });
+    }
+};
+
+const putEmail = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { email } = req.body;
+        const dateNow = new Date();
+        const dateFormat = dateNow.toISOString().split('T')[0];
+
+        const data = {
+            id,
+            email,
+            date_alteration: dateFormat
+        };
+        await userModel.putEmail(data);
+        res.status(201).json(data);
+    } catch (error) {
+        res.status(500).json({ error: 'altering users' });
     }
 };
 
 module.exports = {
-    getAll,
-    getUserByEmail,
+    getAllUsers,
     postCreateUser,
+    putEmail,
 };

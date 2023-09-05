@@ -3,7 +3,7 @@ const knexConfig = require('../../knexfile.js');
 
 const db = knex(knexConfig.development);
 
-const findAll = async () => {
+const getAllUsers = async () => {
     try {
         const users = await db.select().from('users');
         return users;
@@ -12,34 +12,35 @@ const findAll = async () => {
     }
 };
 
-const findByEmail = async (email) => {
+const postCreateUser = async (data) => {
     try {
-        const user = await db.select().from('users').where('email', email).first();
-        return user;
+        const { email, name, password, date_birth, cpf, date } = data;
+
+        const [insertedId] = await db('users').insert({
+            email,
+            name,
+            password,
+            date_birth,
+            cpf,
+            active: 1,
+            date_alteration: date,
+        });
+        return { id: insertedId, ...data };
     } catch (error) {
         throw error;
     }
 };
 
-const createUser = async (newUser) => {
+const putEmail = async (data) => {
     try {
-        const { email, nome, senha } = newUser;
-        const dataAtual = new Date();
-        const [insertedId] = await db('users').insert({
-            email,
-            nome,
-            senha,
-            ativo: 1,
-            dt_alteracao: dataAtual,
-        });
-        return { id: insertedId, ...newUser };
+        await db('users').where('id', data.id).update({ email: data.email, date_alteration: data.date_alteration });
     } catch (error) {
         throw error;
     }
 };
 
 module.exports = {
-    findAll,
-    findByEmail,
-    createUser,
+    getAllUsers,
+    postCreateUser,
+    putEmail
 };
