@@ -40,7 +40,7 @@ const postCreateUser = async (req, res) => {
             dateAlteration: dateFormat
         };
         const newUser = await userModel.postCreateUser(data);
-        res.status(201).json(newUser.id);
+        res.status(201).json({ success: "Usuário criado com sucesso." });
     } catch (error) {
         res.status(500).json({ error: 'Erro ao criar usuário.' });
     }
@@ -48,7 +48,7 @@ const postCreateUser = async (req, res) => {
 
 const putUpdateUser = async (req, res) => {
     try {
-        const { id } = req.params;
+        const id = req.params;
         const { name, email, cpf, password, dateBirth, active } = req.body;
         if (!id || !name || !email || !cpf || !password || !dateBirth || active === undefined) {
             return res.status(400).json({ error: 'Faltam parâmetros obrigatórios.' });
@@ -67,7 +67,7 @@ const putUpdateUser = async (req, res) => {
             dateAlteration: dateFormat
         };
         await userModel.putUpdateUser(data);
-        res.status(200).json(data.id);
+        res.status(200).json({ success: "Usuário atualizado com sucesso." });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Erro ao atualizar usuário.' });

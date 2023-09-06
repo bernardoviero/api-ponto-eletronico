@@ -2,7 +2,7 @@ const UserController = require("../usersController");
 const userModel = require("../../models/usersModel");
 
 test("create a new user", async () => {
-  const request = {
+  const req = {
     body: {
       name: "Jhon",
       email: "jjhon@test.com",
@@ -22,7 +22,7 @@ test("create a new user", async () => {
 
   mockPostCreateUser.mockResolvedValue({ id: fakeInsertedId });
 
-  await UserController.postCreateUser(request, res);
+  await UserController.postCreateUser(req, res);
   expect(mockPostCreateUser).toHaveBeenCalledWith(
     expect.objectContaining({
       cpf: "45645645871",
@@ -33,5 +33,51 @@ test("create a new user", async () => {
     })
   );
   expect(res.status).toHaveBeenCalledWith(201);
-  expect(res.json).toHaveBeenCalledWith(fakeInsertedId);
+  expect(res.json).toHaveBeenCalledWith({ success: "Usuário criado com sucesso." });
+});
+
+test("update a user", async () => {
+  const req = {
+    params: {
+      id: 7,
+    },
+    body: {
+      name: "Jhon",
+      email: "jjhonnew@test.com",
+      cpf: "45645645871",
+      password: "newPassword321",
+      dateBirth: "1990-01-01",
+      active: 1,
+    },
+  };
+
+  delete req.body.dateAlteration;
+
+  const res = {
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn(),
+  };
+
+  const mockPutUpdateUser = jest.spyOn(userModel, "putUpdateUser");
+  mockPutUpdateUser.mockResolvedValue({ success: "Usuário atualizado com sucesso." });
+
+  await UserController.putUpdateUser(req, res);
+  expect(mockPutUpdateUser).toHaveBeenCalledWith(
+    expect.objectContaining({
+      body: {
+        name: "Jhon",
+        email: "jjhonnew@test.com",
+        cpf: "45645645871",
+        password: "newPassword321",
+        dateBirth: "1990-01-01",
+        active: 1,
+      },
+      params: {
+        id: 7,
+      },
+    }),
+  );
+
+  expect(res.status).toHaveBeenCalledWith(201);
+  expect(res.json).toHaveBeenCalledWith({ success: "Usuário atualizado com sucesso." });
 });
