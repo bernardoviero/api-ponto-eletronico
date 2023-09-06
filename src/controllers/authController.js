@@ -19,9 +19,9 @@ const postAuthenticateUser = async (req, res) => {
     if (!authenticatedUser) {
       return res.status(401).json({ error: 'Credenciais inválidas' });
     }
-    const SECRET = process.env.SECRET;
+    const SECRET = process.env.JWT_SECRET;
     const token = jwt.sign({ id: authenticatedUser.id }, SECRET, { expiresIn: 300 });
-    return res.json({ auth: true, token: token });
+    return res.status(200).json({ token: token });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Erro ao realizar autenticação.' });
