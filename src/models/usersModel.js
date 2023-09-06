@@ -6,7 +6,7 @@ const db = knex(knexConfig.development);
 
 const getAllUsers = async () => {
     try {
-        const users = await db.select().from('users');
+        const users = await db.select('name', 'email', 'cpf', 'dateBirth', 'active').from('users');
         return users;
     } catch (error) {
         throw new Error('Erro ao buscar usuários no banco de dados: ' + error.message);
@@ -16,22 +16,20 @@ const getAllUsers = async () => {
 const postCreateUser = async (data) => {
     try {
         const { email, name, password, dateBirth, cpf, dateAlteration } = data;
-
         const [insertedId] = await db('users').insert({
             email,
             name,
             password,
-            date_birth: dateBirth,
+            dateBirth: new Date(dateBirth),
             cpf,
             active: 1,
-            date_alteration: dateAlteration,
+            dateAlteration: new Date(dateAlteration),
         });
 
         if (!insertedId) {
             throw new Error('Erro ao criar usuário no banco de dados.');
         }
-
-        return { id: insertedId, ...data };
+        return { id: insertedId };
     } catch (error) {
         throw new Error('Erro ao criar usuário no banco de dados: ' + error.message);
     }
@@ -72,10 +70,20 @@ const postAuthenticateUser = async (email, password) => {
             return null;
         }
 
-        return user;
+        return user.id;
     } catch (error) {
         throw new Error('Erro ao verificar autenticação: ' + error.message);
     }
+};
+
+const checkIfUserExistsByEmailOrCpf = async (email, cpf) => {
+    const userWithEmail = await db('users').where({ email }).first();
+    const userWithCpf = await db('users').where({ cpf }).first();
+
+    return {
+        emailExists: !!userWithEmail,
+        cpfExists: !!userWithCpf,
+    };
 };
 
 module.exports = {
@@ -83,4 +91,5 @@ module.exports = {
     postCreateUser,
     putUpdateUser,
     postAuthenticateUser,
+    checkIfUserExistsByEmailOrCpf,
 };
