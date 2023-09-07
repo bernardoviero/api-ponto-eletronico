@@ -19,10 +19,10 @@ test("create a new user", async () => {
 
   const mockPostCreateUser = jest.spyOn(userModel, "postCreateUser");
   const fakeInsertedId = 7;
-
   mockPostCreateUser.mockResolvedValue({ id: fakeInsertedId });
-
+  console.log(mockPostCreateUser);
   await UserController.postCreateUser(req, res);
+
   expect(mockPostCreateUser).toHaveBeenCalledWith(
     expect.objectContaining({
       cpf: "45645645871",
