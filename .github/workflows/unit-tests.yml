@@ -21,5 +21,21 @@ jobs:
       - name: Instalar dependências
         run: npm install
 
-      - name: Executar Testes Jest
-        run: npm test
+      - name: Setar variáveis de ambiente
+        env:
+          MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
+          MYSQL_USER: ${{ secrets.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+          MYSQL_PORT: ${{ secrets.MYSQL_PORT }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          PORT: ${{ secrets.PORT }}
+        run: |
+          echo "MYSQL_HOST=${MYSQL_HOST}" >> .env
+          echo "MYSQL_USER=${MYSQL_USER}" >> .env
+          echo "MYSQL_PASSWORD=${MYSQL_PASSWORD}" >> .env
+          echo "MYSQL_DATABASE=${MYSQL_DATABASE}" >> .env
+          echo "MYSQL_PORT=${MYSQL_PORT}" >> .env
+          echo "JWT_SECRET=${JWT_SECRET}" >> .env
+          echo "PORT=${PORT}" >> .env
+          npm test
