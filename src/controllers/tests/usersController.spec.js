@@ -32,6 +32,7 @@ test("create a new user", async () => {
       dateAlteration: expect.any(String),
     })
   );
+
   expect(res.status).toHaveBeenCalledWith(201);
   expect(res.json).toHaveBeenCalledWith({ success: "Usuário criado com sucesso." });
 });
