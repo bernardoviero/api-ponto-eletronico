@@ -44,6 +44,7 @@ const postCreateUser = async (req, res) => {
       dateAlteration: dateFormat
     };
 
+    // so criar o usuário após a autenticação do email
     await userModel.postCreateUser(data);
 
     res.status(201).json({ success: 'Usuário criado com sucesso.' });
@@ -88,5 +89,5 @@ const putUpdateUser = async (req, res) => {
 module.exports = {
   getAllUsers,
   postCreateUser,
-  putUpdateUser,
+  putUpdateUser
 };
