@@ -13,8 +13,12 @@ const getAllUsers = async (req, res) => {
 const postCreateUser = async (req, res) => {
   try {
     const { name, email, cpf, password, dateBirth } = req.body;
-    if (!name || !email || !cpf || !password || !dateBirth) {
-      return res.status(400).send('Faltam parâmetros obrigatórios.');
+
+    const requiredParams = ['name', 'email', 'cpf', 'password', 'dateBirth'];
+    const missingParams = requiredParams.filter(param => !req.body[param]);
+
+    if (missingParams.length > 0) {
+      return res.status(400).json({ error: 'Faltam parâmetros obrigatórios.' });
     }
 
     const dateNow = new Date();
@@ -23,11 +27,11 @@ const postCreateUser = async (req, res) => {
     const userExists = await userModel.checkIfUserExistsByEmailOrCpf(email, cpf);
 
     if (userExists.emailExists) {
-      return res.status(400).json({ error: 'Email já cadastrado.' });
+      throw new Error('Email já cadastrado.');
     }
 
     if (userExists.cpfExists) {
-      return res.status(400).json({ error: 'CPF já cadastrado.' });
+      throw new Error('CPF já cadastrado.');
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -39,10 +43,17 @@ const postCreateUser = async (req, res) => {
       dateBirth,
       dateAlteration: dateFormat
     };
+
     await userModel.postCreateUser(data);
-    res.status(201).json({ success: "Usuário criado com sucesso." });
+
+    res.status(201).json({ success: 'Usuário criado com sucesso.' });
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao criar usuário.' });
+    const errorMessage = error.message === 'Email já cadastrado.' ? 'Email já cadastrado.' :
+      error.message === 'CPF já cadastrado.' ? 'CPF já cadastrado.' :
+        'Erro ao criar usuário.';
+
+    res.status(error.message === 'Email já cadastrado.' || error.message === 'CPF já cadastrado.' ? 400 : 500)
+      .json({ error: errorMessage });
   }
 };
 
