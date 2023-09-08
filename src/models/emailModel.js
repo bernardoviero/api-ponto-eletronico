@@ -15,6 +15,7 @@ const postCreateCode = async (data) => {
       active: 1,
       dateAlteration: new Date(dateAlteration),
     });
+    return insertedId;
   } catch (error) {
     throw new Error('Erro ao criar código no banco de dados: ' + error.message);
   }
